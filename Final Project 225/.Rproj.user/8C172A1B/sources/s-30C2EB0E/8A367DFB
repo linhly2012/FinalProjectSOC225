@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1527216082924.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8A367DFB",
+    "lastKnownWriteTime" : 1527382897,
+    "last_content_update" : 1527382897966,
+    "path" : "~/Desktop/soc225/Final Project 225/joint_data_work.R",
+    "project_path" : "joint_data_work.R",
+    "properties" : {
+        "cursorPosition" : "25,0",
+        "scrollLine" : "5",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

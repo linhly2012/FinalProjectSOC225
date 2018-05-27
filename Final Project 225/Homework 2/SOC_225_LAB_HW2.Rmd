@@ -1,0 +1,205 @@
+---
+title: "SOC 225 LAB Homework 2"
+author: "Linh Ly"
+output: html_notebook
+---
+Write all code in the chunks provided!
+
+Remember to unzip to a real directory before running everything!
+
+Question one should be roughly analogous to what we've done in class. There are hints at the bottom of this document if you get stuck. If you still can't figure it out, go to google/stack exchange/ask a friend. Finally, email me or come to office hours :).
+
+## Problem 1: Piping Hot Variables
+
+1.1 Set up your environment by: 
+-A. Loading the tidyverse  
+-B. Reading the Airbnb Data (I haven't included it in this .zip file, so you'll have to move it into the right directory)  
+  
+```{r}
+library(tidyverse)
+airbnb <- read.csv('data/airbnb.csv')
+airbnb
+```
+  
+1.2 Use the data to answer this question: For how many units does the host live in a different neighborhood than the listing?  
+```{r}
+colnames(airbnb)
+host_diff_neighbor <- airbnb %>% filter(!host_neighbourhood %in% neighbourhood) %>% nrow
+
+#find the neighborhood ot eh unit and neighborhood of the host 
+#maybe use if 
+```
+  
+1.3 Building on that work, what is the average number of listings for hosts that live in the same neighborhood as their listing and hosts who live in different neighborhoods? 
+  
+```{r}
+#what should we do if, either of the column has an empty box
+host_same_neighbor <- airbnb %>% filter(host_neighbourhood %in% neighbourhood)
+
+te <- data.frame(host_same_neighbor$neighbourhood, host_same_neighbor$host_neighbourhood)
+colnames(te)
+
+te$host_same_neighbor.host_neighbourhood[te$host_same_neighbor.host_neighbourhood==' '] =NA
+
+#find mean of two different groups 
+
+```
+  
+1.4 Reflect on your answer to 1.3. What might cause the results you got? How does that connect to the idea that Airbnb might be changing neighborhoods?   
+  *Your answer should be at least a few sentences here*
+
+## Problem 2: Literature Review
+*This question asks you to think deeply about the research question you're investigating. Each answer should be around 100 words.*
+
+2.1: What dataset did you select (include a link agian)? Why did you select it? What is your research question? What variables do you plan to use to answer your question?
+
+2.2: Find at least two articles (at least one must be from an academic journal) that have addressed a question similar to your own. What data did they use? What problems did they have? *If you 'can't find' two articles, provide a screenshot of your search in the university library system from here: http://www.lib.washington.edu/*
+
+2.3: What is one way that you have to modify or examine your data to begin to answer your question?
+
+## Problem 3: Pipe your own data
+
+3.1: Using the functions we've worked with in class (select, filter, mutate, groupby, summarise), plus any others you'd like to use, examine the key relationship from your research question.
+
+You must:
+a. Created a new dataset that only includes the variables you're interested in
+b. Output a version of that dataset that only includes certain values, hopefully ones you're interested in.
+c. Create a modified version of one of your variables (many of you will *need* to do this, but even if you don't, I want to see that you can)
+d. Use groupby to group your data by one variable and see the mean (or similar) of another variable in those groups.
+
+*Use as many codeblocks as you need*
+  
+```{r}
+library(tidyverse)
+library(dplyr)
+#load data 
+homeless <- read.csv('data/homelessness/2007-2016-Homelessnewss-USA.csv')
+#change the year to actual year in numeric bc it is in 1/1/YYYY format
+homeless$Year <- as.numeric(gsub("1/1/", "",as.character(homeless$Year))) 
+
+#only look at 'Total Homeless' measure it is more general and less specific
+df <- homeless %>% filter(Measures == 'Total Homeless') %>% arrange(State)
+
+#global variable - because this will be use more often through out the file
+years <- sort(as.array(unique(homeless$Year)))
+
+#return the sum of the count of homeless of the state in that one year
+#because the sum value from the program did not return a correct value 
+addValue <- function(df.t , y) {
+  sumVal <- 0
+  dataYear <- df.t %>% filter(Year == y)
+  size <- dataYear %>% select(Count) %>% nrow
+  for(i in 0:size) {
+    #stripped any comma that was found in the count value
+    sumVal <- sum(sumVal + as.numeric(gsub(",","",dataYear$Count[i])))
+  }
+  return(sumVal)
+}
+
+#return the dataframe of a state in each year, with the sum of total homeless 
+#from 2007 - 2016
+totalHomelessMeasureState<- function(code) {
+  data <- df %>% filter(State == code)
+  val <- c()
+  for(i in years) {  #converted to array for index purpose
+    val <- c(val, addValue(data, i))
+  }
+  df <- data.frame(Year = years, State = code, Sum_Total_Homeless = val)
+  return(df)
+}
+
+l_state <- unique(df$State) #list of state
+clean_total_homeless_count <- lapply(l_state, FUN=totalHomelessMeasureState)  %>% bind_rows()
+#droping these states from total homeless count because the unemployment 
+#does not has data about these states. 
+clean_total_homeless_count <- clean_total_homeless_count %>% 
+  filter(!State %in% c("AK", "DC", "FL", "GA", "GU", "PR", "VI")) 
+
+clean_total_homeless_count
+```
+
+```{r}
+#load data
+unemployment <- read.csv('data/unemployment-by-county-us/output.csv')
+
+#filter the data down to january level to match with the way homeless data was structure
+unemploy_2007.2016 <- unemployment %>% filter(Year >= 2007, Month == 'January')
+
+#the function will take it a state name and filter the dataframe to only that state leve
+#and then loops through each year to find the sum of those year in one dataframe for 
+#for one state
+addSumRateState <- function(name) {
+  df <- unemploy_2007.2016 %>% filter(State == name)
+  res <- c()
+  for(i in years) {
+    year_df <- df %>% filter(Year == i)
+    res <- c(res,sum(year_df$Rate)) 
+  }
+  new_df <- data.frame(Year = years, State = name, Sum_Rate = res)
+  return(new_df)
+}
+
+#return a dataframe from 2007 to 2016 of each state unemployrate by year. 
+l_state_name <- sort(unique(unemploy_2007.2016$State))
+clean_unemploy <- lapply(l_state_name, FUN=addSumRateState) %>% bind_rows()
+clean_unemploy
+```
+
+```{r}
+#Join both data---------------------------------------------------------------------------------
+#the reason a state-code data frame was create to make sure when merge 
+#homeless data and unemploy together, the data will go according to the state
+#since the way the data structure is completely different 
+#concept for rename(df, new.name = old.name)
+state_code <- data.frame(state.code = state.abb, state.nam = state.name) %>% 
+  filter(!state.abb %in% c("DC", "FL", "AK", "GA", "GU", "PR", "VI"),
+         !state.name %in% c("Florida", "Alaska", "Georgia"))
+
+#for merging purpose
+clean_unemploy <- clean_unemploy %>% rename(state.nam = State)
+clean_total_homeless_count <- clean_total_homeless_count %>% rename(state.code = State)
+
+#merge homeless data with state code first
+full_data <- merge(x= clean_total_homeless_count, y= state_code, all.x=TRUE)
+#then merge unemploy after it - to prevent error 
+full_data <- merge(x = full_data, y = clean_unemploy) %>% arrange(state.nam)
+full_data
+```
+
+
+```{r}
+#return a df for average of the total homeless and unemploy rate
+library(dplyr)
+avg <- full_data %>% group_by(state.nam, 
+                         state.code
+                         ) %>% summarise(mean.homeless = mean(Sum_Total_Homeless),
+                                                 mean.unemploy = mean(Sum_Rate))
+avg
+```
+```{r}
+pop <- read.csv('/data/state_population.csv')
+
+```
+
+##Hints
+1.2
+
+Try using these steps:
+Step 1: identify the variables you need
+Listing neighborhood: neighbourhood
+Host's neighborhood: host_neighbourhood
+
+Step 2: Filter the data to only include the rows where those variables are not equal (check online if you're not sure how to write not equal in r, remember that equals is ==, less than is <)
+
+Step 3: How many rows are left in the filtered data?
+
+1.3
+Ignore/Don't worry about NAs
+You might want to make a new variable indicating if a host is a local host (your answer to 1.2 will help here!)
+The variable for number of listings is host_listings_count
+
+3.1
+a. use select()
+b. use filter()
+c. use mutate()
+d. use groupby(var1) %>% summarise(mean = mean(var2))

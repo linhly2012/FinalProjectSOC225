@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1524680859605.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1435361489",
+    "id" : "9C0A7BE7",
+    "lastKnownWriteTime" : 1524683005,
+    "last_content_update" : 1524683005871,
+    "path" : "~/OneDrive - UW/UW/Data and Society/Lab/Lab Homeworks/Homework 2/SOC 225 LAB HW2.Rmd",
+    "project_path" : "SOC 225 LAB HW2.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "38,170",
+        "ignored_words" : "google,tidyverse,Airbnb,groupby,summarise,neighbourhood,NAs\n",
+        "scrollLine" : "33"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

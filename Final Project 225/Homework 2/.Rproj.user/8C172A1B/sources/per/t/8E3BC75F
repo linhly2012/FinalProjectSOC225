@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1525380717306.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8E3BC75F",
+    "lastKnownWriteTime" : 8389754696138489862,
+    "last_content_update" : 1525380717306,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "44D15AA8",
+        "caption" : "airbnb",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=airbnb&cache_key=44D15AA8",
+        "displayedObservations" : 10000,
+        "environment" : "",
+        "object" : "airbnb",
+        "preview" : 0,
+        "totalObservations" : 10000,
+        "variables" : 95
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

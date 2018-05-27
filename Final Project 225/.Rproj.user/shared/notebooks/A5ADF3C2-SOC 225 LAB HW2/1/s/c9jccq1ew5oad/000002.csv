@@ -1,0 +1,4 @@
+"0","```r
+colnames(airbnb)
+host_diff_neighbor <- airbnb %>% filter(!host_neighbourhood %in% neighbourhood) %>% nrow
+```"
