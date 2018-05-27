@@ -1,0 +1,157 @@
+---
+title: "Guns Violence Record Across U.S. in 2016"
+output: html_document
+---
+
+```{r summary information set up, include=FALSE}
+#Assignment 6
+#set up
+library("dplyr")
+library("knitr")
+#````````````````````````````````````````````````Summary Information 
+shootings.df <- read.csv("/Users/linhly/Desktop/INFO201/a6-mapping-shootings-linhly2012/data/shootings-2016.csv")
+#How many shootings occurred? counted by all the shootings in the data despite the locations.
+counts.shooting <- shootings.df %>% nrow()
+
+#How many lives were lost?
+lives.lost <- shootings.df %>% select(killed) %>% sum()
+
+#Which cities that were most affected (you can decide what "affected" means)?
+#affected - the city got most killed and injured
+city.most.affected <- shootings.df %>% select(city, state, injured, killed) %>% 
+                                       filter(injured == max(injured), killed == max(killed)) %>% 
+                                       summarise(city = paste(city, "," ,state)) %>% as.matrix()
+                                                                                      
+#At least one other insight of your choice - location: California
+CA.shootings.df <- shootings.df %>% select(city, state, injured, killed) %>% 
+                                       filter(as.character(state) == 'California')
+#getting the state name
+state <- CA.shootings.df %>% select(state) %>% unique() %>% as.matrix()
+#calculate the total of people who were killed at California
+sums.killed.shootings.in.CA <- sum(CA.shootings.df$killed)
+#calculate the total of people who were injured from the shootings incidents at California
+sums.injured.shootings.in.CA <- sum(CA.shootings.df$injured)
+#calculate the overall guns violence cases happened at California in 2016
+total.shootings.in.CA <- CA.shootings.df %>% nrow()
+#the max number of people who were injured
+max.injured.in.CA <- CA.shootings.df %>% select(city, injured) %>% filter(injured == max(injured))
+#the max number of people who were killed
+max.killed.in.CA <- CA.shootings.df %>% select(city, killed) %>% filter(killed == max(killed))
+```
+
+The total count of shootings based on locations (not state) in 2016 throughout the nation is **`r counts.shooting`**.  
+In these shooting cases, there are **`r lives.lost` lives** were lost. The city that was most affect by these  
+shooting incidents is **`r city.most.affected`**. 
+
+Throughout 2016, **`r state`** is one of the state that has most people impacted by guns violence.  
+There were **`r total.shootings.in.CA`** shootings incidents happened in CA during 2016. 
+There were more than **`r sums.killed.shootings.in.CA`** people were **killed**, and  
+**`r sums.injured.shootings.in.CA`** people were **injured** from these shootings incidents. 
+At **`r state`**, **`r max.killed.in.CA$city`** is the location  
+that has the most people died. According to the record, **`r max.killed.in.CA$killed`** people were annouced dead.  
+The location of the incidents got most people injured was **`r max.injured.in.CA$city`** and  
+**`r max.injured.in.CA$injured`** people injured.
+
+<center> <h2> Total People were Killed and Injured in Each State in 2016 </h2> </center>
+In this table, we will see the **total people who were killed** and **people who were injured** from these shooting   incidents across **U.S in 2016**. It is important to see the total of people who were killed and injured because it   show that how people have abused gun usage throughout states. The purpose is to remind people that not all people  should have the right to buy guns.
+
+```{r summary table, interactive map and interactive plot, include=FALSE}
+#set up for Summary Table, Descriptive of particular Table and an Interative Map
+library("dplyr")
+library("plotly")
+#````````````````````````````````````````````````Summary Table 
+#name of all states that have people who were killed (killed > 0) and injured
+state.names <-  shootings.df %>% select(state, injured, killed) %>% filter(killed > min(killed)) %>%
+                                select(state) %>% unique() %>% as.matrix()
+#function help find the total people who were killed and injured at a state level
+FindTotalKilledAndInjured <- function(state.name) {
+    df.of.state <- shootings.df %>% select(city, state, injured, killed) %>% select(state, injured, killed) %>% filter(state == state.name)
+    sum.killed <- sum(df.of.state$killed) #finding the total people killed that state
+    sum.injured <- sum(df.of.state$injured) #finding the total people injured in that state
+    df.of.state <- (df.of.state %>% select(state) %>% 
+                                  mutate(total.killed = sum.killed, total.injured = sum.injured))[1, ]   
+    return(df.of.state)
+}
+
+#create a df of total killed and injured at state level (except District of Columbia)
+states.observation.df <- lapply(state.names, FUN=FindTotalKilledAndInjured) %>% bind_rows() %>%
+                                filter(state != "District of Columbia") %>% arrange(desc(total.injured))
+#rename the columns
+states.observation.df <- plyr::rename(states.observation.df, c("state" = "State", "total.killed" = "Total Killed", "total.injured" = "Total Injured"))
+count.impacted.state  <- kable(states.observation.df)
+#```````````````````````````````````````````````````````````````````````
+
+#``````````````````````Description of a particular incident
+#The report will focus on Florida shooting cases.
+Florida.shooting.cases <- shootings.df %>% select(date, city, state, injured, killed) %>% 
+                                          filter(state == 'Florida', killed == max(killed))
+#```````````````````````````````````````````````````````````````````
+
+#````````````````````````An interactive map
+graph_across_us <- plot_geo(data = shootings.df, x= ~shootings.df$lng, 
+         y = ~shootings.df$lat)%>% 
+  add_markers(text = ~paste0("<br />", "# of people got injured: ", shootings.df$injured,
+                             "<br />", "# of people were killed: ", shootings.df$killed, 
+                             "<br />", "Total of people impacted: ", shootings.df$injured + shootings.df$killed,
+                             "<br />", "Date happened: ", shootings.df$date,
+                             "<br />", "Location: ", shootings.df$city, ", ", shootings.df$state),
+              color = ~killed,
+              hoverinfo = "text",
+              symbol = I("diamond"),
+              size = I(3.5)) %>%
+  colorbar(title = "Number of People <br /> were killed") %>%
+  layout(title = paste0("<b>","Shootings Incidents Across U.S. in 2016", "</b>"),
+         geo = list(scope = "usa", showland = TRUE, 
+                      landcolor = toRGB("gray95"),
+                    projection = list(type = "albers-usa")))
+#`````````````````````````````````````````````````````````````````````
+
+#```````````````````````````````````An interactive plot of your choice
+plot <- plot_ly(shootings.df,
+                 x = ~shootings.df$state,
+                 y = ~shootings.df$killed,
+                 type = 'scatter',
+                 mode = 'markers',
+                 marker = list(size = 10, color = '#e6ecff',
+                               line = list(color = '#3366ff', width = 2)),
+                 text = ~paste0("# of People were killed: ", shootings.df$killed,
+                                "<br />", "# of People Injured: ", shootings.df$injured,
+                                "<br />", "Date: ",shootings.df$date, 
+                                "<br />", paste0("Location: ", shootings.df$city, ", ", shootings.df$state)
+                                )) %>%
+              layout(title = paste0("<b>",'Shootings Cases in 2016',"</b>"),
+                     xaxis = list(title = 'State Name(s)'),
+                     margin = list(b = 150),
+                     yaxis = list(title = 'Killed (# of people)', zeroline = TRUE,
+                        range = c(-1, max(shootings.df$killed) + 5))
+                     )
+```        
+
+```{r attach summary table, echo=FALSE}
+#Summary Table 
+count.impacted.state
+```
+
+**Description:**   
+As we can see in the table, the shooting incident that has most people **killed** happened in **`r Florida.shooting.cases$state`**, back in `r Florida.shooting.cases$date`. 
+According to _**The New York Times**_, the shooting happened at a Gay Nightclub in **`r Florida.shooting.cases$city`**. 
+About 320 people in the club that night and **`r Florida.shooting.cases$killed + Florida.shooting.cases$injured`** were impacted by this event. 
+This almost one-third of the people who were at the club that night. **`r Florida.shooting.cases$killed`** people died in this incident and **`r Florida.shooting.cases$injured`** people were injured. 
+This is one of the worst shooting case compared to _the 2007 shooting at Virginia Tech_, and _2012 shooting at an elementary school in Newtown, Connecticut_ . (source: [link](https://www.nytimes.com/2016/06/13/us/orlando-nightclub-shooting.html?_r=0))  
+
+
+```{r interative map and interactive plot, echo=FALSE}
+#An interactive map
+graph_across_us
+
+#An interactive plot of your choice
+plot
+```
+**Description:**   
+For my interactive plot, I chose scatterplot and display in this way. I used the state variables for x-axis,   
+and number of people got killed in these shootings incidents for y-axis. The reason I chose the layout this way, because  
+you can get to see **an easier view of an approximate number shootings incidents happened at that state in one year.**   
+Beside, this display might interest people who want to know **which state has the less gun violence for moving purposes**.  
+As you hover, to each point on the scatter plot, you will get to see a more detail information about incident.
+
+

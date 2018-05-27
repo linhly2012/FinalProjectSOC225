@@ -1,0 +1,7 @@
+"0","```r
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+airbnb <- read.csv(\"data/airbnb_census.csv\")
+airbnb
+```"

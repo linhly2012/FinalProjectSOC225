@@ -1,0 +1,4 @@
+"0","```r
+data <- read.csv(\"data_project/data.csv\") %>% arrange(state)
+data 
+```"
