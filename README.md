@@ -1,4 +1,4 @@
-#Relation between Homeless and Unemployment 
+# Relation between Homeless and Unemployment 
 ***
 Is there a relationship between homelessness and unemployment rate?
 
@@ -6,7 +6,7 @@ This repository contains all the R files that were produced to clean up mutiple 
 and a master csv file for visualization purpose; including identify the relationship using 
 visualization technique. 
 
-#####Outline
+##### Outline
 
 1. [Avg-work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/avg-work.R) 
 2. [Homeless_unemploy_clean file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/homeless_unemploy_clean.R)
