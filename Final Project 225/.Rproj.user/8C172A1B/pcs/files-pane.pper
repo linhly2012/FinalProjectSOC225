@@ -1,8 +1,8 @@
 {
-    "path" : "~/Desktop/soc225/Final Project 225",
+    "path" : "~/Desktop/FinalProjectSOC225/Final Project 225",
     "sortOrder" : [
         {
-            "ascending" : true,
+            "ascending" : false,
             "columnIndex" : 2
         }
     ]
