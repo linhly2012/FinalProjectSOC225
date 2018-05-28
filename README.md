@@ -14,7 +14,12 @@ visualization technique.
 4. [Joint_data_work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/joint_data_work.R)
 5. [Pop-work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/pop-work.R)
 6. [Unemployment_work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/unemployment_work.R)
-7. [Graphing file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/Graphing.Rmd)
+7. [Graphing file](#graph)
 
-##### Preview of the table 
+## Preview of the table 
 ![](master-table.png)
+
+##### <a id="graph"></a>Graphing file
+<a id="graph"></a>
+First plot - 
+![](first-plot.png)

@@ -57,6 +57,8 @@ ggplot(join %>% filter(state.code %in% c("CA", "HI", "WA",
 # Plot 1 This is great. I think you can drop the legend (maybe highlight a few states?) 
 # I think you want geom_smooth(method='lm') using the same aes() as 
 # from plot 1 (you can even plot them together)
+
+(https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/Graphing.Rmd)
 ```
 #####Plot 2
 ```{r, echo = FALSE}
