@@ -6,7 +6,7 @@ This repository contains all the R files that were produced to clean up mutiple 
 and a master csv file for visualization purpose; including identify the relationship using 
 visualization technique. 
 
-##### Direct Access
+##### Outline
 
 1. [Avg-work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/avg-work.R) 
 2. [Homeless_unemploy_clean file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/homeless_unemploy_clean.R)
@@ -15,23 +15,6 @@ visualization technique.
 5. [Pop-work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/pop-work.R)
 6. [Unemployment_work file](https://github.com/linhly2012/FinalProjectSOC225/blob/master/Final%20Project%20225/unemployment_work.R)
 
-```{r package_options, include=FALSE}
-#Not including library packages loading when knit the file 
-knitr::opts_knit$set(progress = TRUE, verbose = TRUE)
-library(tidyverse)
-library(dplyr)
-library(knitr)
-```
 
-##### Overview of the master data
-
-```{r, echo = FALSE}
-data <- read.csv('~/Desktop/FinalProjectSOC225/Final Project 225/clean_output/data.csv')
-kable(data %>% select(-Estimate.Date) %>% rename("est_pop" = "Estimate") %>% head(5))
-```
-
-hyperlink to jump to specific part
-### <a id="your_leader"></a>Your leader
-Take me to [your leader](#your_leader)
-<a id="your_leader"></a>
-
+--r
+--
