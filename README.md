@@ -22,4 +22,4 @@ visualization technique.
 ##### <a id="graph"></a>Graphing file
 <a id="graph"></a>
 First plot - 
-![](first-plot.png)
+<img src = "first-plot.png", height="300", width="500"/>
