@@ -1,22 +1,37 @@
 library(tidyverse)
 library(dplyr)
+library(readr)
 
 #load in data-------------------------------------------------
-homeless <- read.csv('data/homelessness/2007-2016-Homelessnewss-USA.csv')
+homeless <- read.csv('~/Desktop/FinalProjectSOC225/Final Project 225/data/homelessness/2007-2016-Homelessnewss-USA.csv')
 
-#homeless df--------------------------------------------------------------------------------------
-#note: the count value is not the rate. 
+#homeless df - note: the count value is not the rate.--------- 
 #change the year to actual year in numeric bc it is in 1/1/YYYY format
 homeless$Year <- as.numeric(gsub("1/1/", "",as.character(homeless$Year))) 
+#global variable - because this will be use more often through out the file
+years <- sort(as.array(unique(homeless$Year)))
 
 #a directory output to store the sum of total homeless
-dir.create("~/Desktop/soc225/Final Project 225/clean_output") 
+#dir.create("~/Desktop/soc225/Final Project 225/clean_output") 
 
+#Looking the data measure at "Total Homeless" (t.h) level-----------------------------------------
+#calculate the sum of the totalhomeless count by year and state; and droping 
+#these states from total homeless count because the unemployment does not has 
+#data about these states. 
+totalHomeless_sum <- homeless %>% filter(Measures == 'Total Homeless') %>% arrange(State) %>%
+  group_by(Year, State) %>%
+  summarise(total.homeless_sum = sum(as.numeric(gsub(",","",Count)))) %>%
+  filter(!State %in% c("AK", "DC", "FL", "GA", "GU", "PR", "VI"))
+
+write.csv(totalHomeless_sum, 
+          "~/Desktop/soc225/Final Project 225/clean_output/homeless-total-output.csv", 
+          row.names =FALSE)
+
+#USE IT TO TEST THE ACCURACY OF SUM METHOD 
 #return the Total Homeless count of that year by state and arrange it in 
 #ascending order. Since the data structure of unemployment is completely different 
 #the best way to do it for now is looking at the sum of the year for homeless data, 
 #and for unemployment, also sum up the data of the rate. 
-
 #Looking the data measure at "Total Homeless" (t.h) level-------------------------------------------
 df <- homeless %>% filter(Measures == 'Total Homeless') %>% arrange(State)
 
@@ -31,11 +46,8 @@ addValue <- function(df.t , y) {
   }
   return(sumVal)
 }
-
-#the function will filter down the dataframe to state level 
-#then find the sum of total homeless of the state in each year
-#then return a dataframe of that state (the sum of total homeless)
-#in a dataframe
+#the function will filter down the dataframe to state level then find the sum of total homeless of the state in each year
+#then return a dataframe of that state (the sum of total homeless) in a dataframe
 totalHomelessMeasureState<- function(code) {
   data <- df %>% filter(State == code)
   val <- c()
@@ -49,10 +61,6 @@ totalHomelessMeasureState<- function(code) {
 
 l_state <- unique(df$State) #list of state
 clean_total_homeless_count <- lapply(l_state, FUN=totalHomelessMeasureState)  %>% bind_rows()
-
-write.csv(clean_total_homeless_count, 
-          "~/Desktop/soc225/Final Project 225/clean_output/homeless-total-output.csv", 
-           row.names =FALSE)
 
 #test run ---------------------------------------------------------------------------------------
 #data frame include Year / State / Measures / total count of that one year

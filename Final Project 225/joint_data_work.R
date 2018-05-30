@@ -1,34 +1,28 @@
 library(tidyverse)
 library(dplyr)
 
-#data frame of homeless and unemploy sum rate 
-data <- read.csv("clean_output/jointed.csv")
+#data frame of homeless and unemploy sum rate and avg
+data <- read.csv("~/Desktop/FinalProjectSOC225/Final Project 225/clean_output/avg-homeless-unemploy.csv")
 
-#Creating master data frame - joint all the file 
-avg_df <- read.csv('clean_output/avg-homeless-unemploy.csv')
-state_df <- read.csv('clean_output/state-pop-07-16.csv')
+state_df <- read.csv('~/Desktop/FinalProjectSOC225/Final Project 225/clean_output/state-pop-07-16.csv')
 
-#jointed of average and state data frame
-jointed_a_s <- avg_df %>% left_join(state_df, by= c("state.nam" = "state")
+#join AVG, UNEMPLOY, HOMELESS, POPULATION, YEAR, STATE data frame together
+jointed_a_s <- data %>% left_join(state_df, by= c("state.nam" = "state")
                                     ) %>% rename("state" = "state.nam") 
 
-n_jointedA_S <- jointed_a_s %>% select(-state.code)
-n_data <- data %>% rename(state = state.nam)
-
-full_jointed <- left_join(n_data, n_jointedA_S, by = "state")
 #re-structure the population format in a way that is not repeated more than due to the 
 #way of the other data frame structure.
-y <- full_jointed %>% 
+master_data <-  jointed_a_s %>% 
   gather(key = "Estimate Date", value = "Estimate", EST_JUL_2007:EST_JUL_2016) %>% 
   filter(Year == as.numeric(gsub("EST_JUL_", "",`Estimate Date`))) %>% 
-  rename(avg_homeless_07to16 = mean.homeless, 
-         avg_unemploy_07to16 = mean.unemploy)
+  mutate(homeless_proportion = Sum_Total_Homeless / Estimate, 
+         unemploy_proportion = Sum_Unemploy_Rate/ Estimate) %>%
+  select(-c("Estimate Date")) %>% rename(est_pop = Estimate)
 
 #master data frame 
-write.csv(y, 
+write.csv(master_data, 
           "~/Desktop/FinalProjectSOC225/Final Project 225/clean_output/data.csv", 
           row.names =FALSE)
-
 #-----------------------------------------------------------------------------------------
 #maybe pick two states from each region 
 

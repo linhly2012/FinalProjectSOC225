@@ -5,8 +5,8 @@ library(tidyverse)
 #total population is also included (the time frame was 2000 - 2010)
 
 #read in data of county level 
-state_pop <- read.csv('data/state-pop-10-16/state_est_10-16clean.csv')
-county_pop <- read.csv('data/county-00-10/clean-county-00-10.csv')
+state_pop <- read.csv('~/Desktop/FinalProjectSOC225/Final Project 225/data/state-pop-10-16/state_est_10-16clean.csv')
+county_pop <- read.csv('~/Desktop/FinalProjectSOC225/Final Project 225/data/county-00-10/clean-county-00-10.csv')
 
 #data preference note. 
 #T population on county file in 2010 is different in county population and state file. 

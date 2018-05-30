@@ -183,12 +183,10 @@ kable(master %>% head(5))
 
 ```{r full master data, echo = FALSE}
 region <- read.csv('census-regions-master/us census bureau regions and divisions.csv')
-#View(region)
 
 colnames(region) <- tolower(colnames(region))
-
 join <- suppressWarnings(suppressMessages(master_data %>% left_join(region, by = "state")))
-#View(join)
+
 #restructure
 join <- join %>% select(year, division, region, state, state.code.x, est_pop, 
                         total.homeless_sum, unemploy.rate_sum, 
