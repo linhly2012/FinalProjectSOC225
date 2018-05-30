@@ -12,10 +12,12 @@ library(ggplot2)
 library(knitr)
 ```
 
-#####Focus 
+####Focus 
+
 According to [U.S.News](https://www.usnews.com/news/us/articles/2017-12-06/us-homeless-count-rises-pushed-by-crisis-on-the-west-coast), homeless population in the nation begin to rise after a while (ever since 2010). The rise of homelessness is increasing fast especially in West Coast cities. It is important for us to understand the root grow of homeless and unemployment is one of the factor that can potentially contribute to an individual chance become homeless. The problem this research aim to understand: _"Is there a relationship between unemployment and homelessness ?"_
 
-#####Links/Sources of the data 
+####Links/Sources of the data 
+
 * Population: 
     + 2000 to 2010: https://www.census.gov/data/tables/time-series/demo/popest/intercensal-2000-2010-counties.html
     + 2010 to 2016: https://www.census.gov/data/tables/2016/demo/popest/state-total.html
@@ -23,8 +25,10 @@ According to [U.S.News](https://www.usnews.com/news/us/articles/2017-12-06/us-ho
 * Homelessness data(2007 - 2016): https://www.kaggle.com/adamschroeder/homelessness/data
 * Unemployment rate: https://www.kaggle.com/jayrav13/unemployment-by-county-us
 
-#####Method 
+####Method 
+
 - Using the provided sources, a master data sheet will put together to understand the change of unemployment rate and homelessness over time during the course of 2007 to 2016 after the data cleansing process. 
+
 ```{r homeless}
 homeless <- read.csv('data/homelessness/2007-2016-Homelessnewss-USA.csv')
 #note: the count value is not the rate. 
@@ -184,7 +188,8 @@ colnames(d_join) <- gsub("[[:punct:]]+", " ",colnames(d_join))
 kable(d_join %>% head(5))
 ```
 
-#####Summary statistics
+####Summary statistics
+
 ```{r}
 #using a dummy variable for displaying purpose
 j <- join
@@ -192,7 +197,7 @@ colnames(j) <- gsub("[[:punct:]]+", " ",colnames(j))
 kable(summary(j %>% ungroup() %>% select(-c(year, division, region, state, c("state code")))))
 ```
 
-#####Visualization
+####Visualization
 ```{r graph 1}
 ggplot(join %>% filter(between(year, 2010, 2016)), 
        aes(x=unemploy.rate_sum, y= total.homeless_sum, colour = region)) +
@@ -208,47 +213,69 @@ ggplot(join %>% filter(between(year, 2010, 2016)),
 ```
 
 - Figure 1: The measurement of total homelessness (that do not belong to specific category) in relation to the unemployment rate in 2010 to 2016 in 4 different regions of US. 
-######Connection of data
-As we can see in this the graph, the 
 
 ```{r graph 2}
 ggplot(join %>% filter(between(year, 2010, 2016), 
-                       state.code %in% c("CA", "WA", "TX", "MD", "NY", "PA", "WI", "MO")), 
-       aes(unemploy_proportion, homeless_proportion, colour = region)) +
+                       state.code %in% c("CA", "WA", "TX", "MD", "NY", "MA", "WI", "MO")), 
+       aes(unemploy_proportion, homeless_proportion, colour = state)) +
   geom_point() + 
   labs(title = "Relationship between Unemployment and Homeless Proportion (2010 to 2016)") + 
   xlab("Unemployment Proportion") +
   ylab("Homeless Proportion")
 ```
 
-- Figure 2: The relation between homeless and unemployment proportion to the population of (selected) each state in 2010 to 2016 in 4 different US regions. 
+- Figure 2: The relation between homeless and unemployment proportion to the population of (selected) each state in 2010 to 2016 in 4 different US regions (8 states with 2 states from each region). 
+
+#####Figure 1 and 2: 
+
 ######Connection of data  
 
-- Figure 1 and 2: 
-######Limitations 
-A limitation that these data restricted to was several states were dropped from the data frame and no explanation was provided. This can potentially skewed the unemployment rate and homelessness graph, since it factor goes by regions of US. Another limition is the way of poppulation was constructed. The census releases population data from 2000 to 2010, and 2010 to 2016 in two different format, especially the estimate population of 2010 in these two population files are not the same - this can affect the graph outliers as well. 
+- From figure 1, as the unemployment rate increase over time, the homelessness measure is being affected by it positively, especially for Midwest, South and West regions of the US. Using linear model, it also displayed that unemployment rate has influence of homelessness, especially the line also went through some plots on the graph. However, the Northeast region plot is questionable because it is pretty clustered together during early time and afterward, the number of unemployment rate is high but the homelessness either under the linear model or above. This is questionable, because there were at lease three states data for these two measurements are not included.  
 
-######Confidence
-The confidence in these findings are about 50% because the limitations of these data provided and the way the data was constructed. Additionally, it is hard to tell if the unemployment has impacted to individual homelessness, because the homelessness data that was accessible only available from 2007 to 2016. Even if the unemployment data included from 19XX to 2016, it is impossible to see the relationship. It will be easier, if there is an access to data of homless from 2006 to 2016 or from 2000 to 2016. Also, the data from 2007 to 2009 were not graphed, due to the number of unemployment going on between 2007 to 2009 was high (outliers) with the economic fall during that time, it clustered any data that is being plotted after 2009. 
-
-######Ethical concern 
+- Looking into figure 2, it displayed that the higher the unemployment proportion, the lower the homeless proportion; the lower the unemployment proportion, the higher the homeless proportion. This figured was plotted by a selection of 8 states with 2 states from each regions. In a way this figure also raised a question, because if this was a positive correlated impact, then it is expected to see high unemployment proportion, high homelessness proportion like the relationship was shown in figure 1 between unemployment and homelessness. One factor that could cause this happen is the population of the states. Which make sense, for states like New York, California, or Washington, their populations has been growing for the last couple years because the larger the number divided to a large  number, the answer is smaller. 
 
 
 ```{r graph 3}
-ggplot(join %>% filter(state.code %in% c("CA", "TX", "NY", "WA"))) + 
-  geom_line(aes(year, unemploy.rate_sum, colour = state)) +
-  labs(title = "Unemployment Rate from 2007 to 2016 in the US") + 
-  xlab("Year") +
-  ylab("Unemployment Rate")
+ggplot(join %>% filter(state.code %in% c("CA", "ID", "WA", "UT"))) + 
+  geom_line(aes(unemploy.rate_sum, total.homeless_sum, colour = state)) +
+  facet_wrap(~state, scale = "free") + 
+  labs(title = "Unemployment Rate v. Homelessness in West Coast (2007 to 2016)") + 
+  xlab(" Unemployment Rate") +
+  ylab(" Total Homelessness") + 
+  theme(strip.text.x = element_blank())
+
 ```
 
-- Figure 3: 
-######Limitations 
-######Confidence 
+- Figure 3: The change of Unemployment Rate over time during the last 9 years of West Coast states - California, Oregon, Utah, and Washington. 
+
+######Connection of data
+- Using line graphs to understand the relationship between these two variables (unemployment and homelessness), this figures show that as the unemployment rate increase over time, the homelessness measure is also increasing, especially in popular state like California or Washington, which support the argument that there is a positive relationship from figure 1. 
+
+####Dicussion - for all figures: 
+
+######Limitations
+
+- A limitation that these data restricted to was several states were dropped from the data frame and no explanation was provided. This can potentially skewed the unemployment rate and homelessness graph, since it factor goes by regions of US. Another limition is the way of population was constructed. The census releases population data from 2000 to 2010, and 2010 to 2016 in two different format, especially the estimate population of 2010 in these two population files are not the same - this can affect the graph outliers as well. The way the data produced not only can influenced the visualization due to outliers difference, but it will impacted the way people will interpreted the visualization as well. 
+
+######Confidence
+
+- The confidence in these findings are about 50% because the limitations of these data provided and the way the data was constructed. Additionally, it is hard to tell if the unemployment has impacted to individual homelessness, because the homelessness data that was accessible only available from 2007 to 2016. Even if the unemployment data included from 19XX to 2016, it is impossible to see the relationship. It will be easier, if there is an access to data of homeless from 2006 to 2016 or from 2000 to 2016. Also, the data from 2007 to 2009 were not graphed, due to the number of unemployment going on between 2007 to 2009 was high (outliers) with the economic fall during that time, it clustered any data that is being plotted after 2009. Including the way data constructed, I would assume that not every single locations or states (since one of the data did not have any values for at least three states) are being surveyed due to the geographies issues or they preferred not to be surveyed. 
+
 ######Ethical concern 
 
+* For: 
 
-- All figures: 
-######Connection of data  
+    + Homeless data: 
+        + it did not specify how these data was collected but only mentioned that this is a Point-in-Times estimates of homelessness. Although, the raw-data structured is well-formatted in a way of anonymity, but still can be concerning because it seem like they were using housing related data, which we don't know if the people who participated in these housing-related-data process know that this is being public. At the same time, I feel like you can potentially dig deeper who was involved with these data (especially in states or counties that has small population) because the county code was provided and specific homeless groups were labeled.
+
+    + Unemployment data: 
+        + Although the author of this data mention how it was produced, but one concern is the way the author put together. Because there were about three states data is not available or included, including how did the government got the unemployment measurement of each states on county level? And if this was involved with human subjects, did the government let them know their data is part of the public data? 
+        
+    + Population data: 
+        + A question is how did the government gathered the data? What was the methods that were used to do so?
+        
+    + Region data: 
+        + How did the government assign each states to certain region? Because it is questionable that WY is consider a part of West Region of the state.
+        
 
 
