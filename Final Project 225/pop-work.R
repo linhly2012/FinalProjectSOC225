@@ -9,9 +9,9 @@ state_pop <- read.csv('data/state-pop-10-16/state_est_10-16clean.csv')
 county_pop <- read.csv('data/county-00-10/clean-county-00-10.csv')
 
 #data preference note. 
-#for some reason, the population on county file in 2010 is different in county population and state file. 
-#I chose state file because it seem like it was more updated since it was follow after from 2010 to 2016 and 
-#for the county file it was from 2000 - 2010 
+#T population on county file in 2010 is different in county population and state file. 
+#I chose state file because it seem like it was more updated since it was follow after 
+#from 2010 to 2016 and for the county file it was from 2000 - 2010 
 
 #clean county population data, dropped 2001 - 2006 and 2010, because the data
 #with homeless and unemployment measure go from 2007 to 2016; also due to the way

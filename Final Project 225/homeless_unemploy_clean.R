@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 #install.packages("httpuv", type="binary")
 #load in data-------------------------------------------------
-homeless <- read.csv('data/homelessness/2007-2016-Homelessnewss-USA.csv')
+homeless <- read_csv('~/Desktop/FinalProjectSOC225/Final Project 225/data/homelessness/1.1.15-Homelessnewss-USA.csv')
 unemployment <- read.csv('data/unemployment-by-county-us/output.csv')
 
 #note: the count value is not the rate. 
@@ -25,34 +25,41 @@ years <- sort(as.array(unique(homeless$Year)))
 df <- homeless %>% filter(Measures == 'Total Homeless') %>% arrange(State)
 
 #interest group : homeless individuals, homeless people in families , homeless veterans 
-#return the sum of the count of homeless of the state in that one year
-addValue <- function(df.t , y) {
-  sumVal <- 0
-  dataYear <- df.t %>% filter(Year == y)
-  size <- dataYear %>% select(Count) %>% nrow
-  for(i in 0:size) {
-    #stripped any comma that was found in the count value
-    sumVal <- sum(sumVal + as.numeric(gsub(",","",dataYear$Count[i])))
-  }
-  return(sumVal)
-}
+Sum_total_homeless<- df %>% group_by(Year, State) %>% 
+  filter(Measures == 'Total Homeless') %>% 
+  summarise(sum_year = sum(Count))
 
-totalHomelessMeasureState<- function(code) {
-  data <- df %>% filter(State == code)
-  val <- c()
-  for(i in years) {  #converted to array for index purpose
-    val <- c(val, addValue(data, i))
-  }
-  df <- data.frame(Year = years, State = code, Sum_Total_Homeless = val)
-  return(df)
-}
-
-l_state <- unique(df$State) #list of state
-clean_total_homeless_count <- lapply(l_state, FUN=totalHomelessMeasureState)  %>% bind_rows()
+#To ensure the sum function work properly - 
+# #return the sum of the count of homeless of the state in that one year
+# addValue <- function(df.t , y) {
+#   sumVal <- 0
+#   dataYear <- df.t %>% filter(Year == y)
+#   size <- dataYear %>% select(Count) %>% nrow
+#   for(i in 0:size) {
+#     #stripped any comma that was found in the count value
+#     sumVal <- sum(sumVal + as.numeric(gsub(",","",dataYear$Count[i])))
+#   }
+#   return(sumVal)
+# }
+# 
+# totalHomelessMeasureState<- function(code) {
+#   data <- df %>% filter(State == code)
+#   val <- c()
+#   for(i in years) {  #converted to array for index purpose
+#     val <- c(val, addValue(data, i))
+#   }
+#   df <- data.frame(Year = years, State = code, Sum_Total_Homeless = val)
+#   return(df)
+# }
+# 
+# l_state <- unique(df$State) #list of state
+# clean_total_homeless_count <- lapply(l_state, FUN=totalHomelessMeasureState)  %>% bind_rows()
 
 #unemploy df ----------------------------------------------------------------------------------
 #filter the data down to january level to match with the way homeless data was structure
 unemploy_2007.2016 <- unemployment %>% filter(Year >= 2007, Month == 'January')
+
+#unemployRate_sum <- unemploy_2007.2016 %>% group_by(Year, State) %>% summarise(sum_rate = sum(Rate))
 
 #the function will take it a state name and filter the dataframe to only that state leve
 #and then loops through each year to find the sum of those year in one dataframe for 
@@ -68,6 +75,7 @@ addSumRateState <- function(name) {
                        Sum_Unemploy_Rate = res)
   return(new_df)
 }
+
 #return a dataframe from 2007 to 2016 of each state unemployrate by year. 
 l_state_name <- sort(unique(unemploy_2007.2016$State))
 clean_unemploy <- lapply(l_state_name, FUN=addSumRateState) %>% bind_rows()

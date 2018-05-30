@@ -1,0 +1,30 @@
+"0","kable(avg %>% rename(""state code"" = ""state.code"",
+                      ""homeless sum"" = ""total.homeless_sum"", 
+                      ""unemploy sum"" = ""unemploy.rate_sum"", 
+                      ""homeless mean"" = ""mean.homeless.state"", 
+                      ""unemploy mean"" = ""mean.unemploy.state"") %>% head(5))
+"
+"1","
+
+"
+"1","| Year|state   |state code | homeless sum| unemploy sum| homeless mean| unemploy mean|"
+"1","
+"
+"1","|----:|:-------|:----------|------------:|------------:|-------------:|-------------:|"
+"1","
+"
+"1","| 2007|Alabama |AL         |         5452|        351.1|        5106.3|           624|"
+"1","
+"
+"1","| 2008|Alabama |AL         |         5387|        398.0|        5106.3|           624|"
+"1","
+"
+"1","| 2009|Alabama |AL         |         6080|        794.8|        5106.3|           624|"
+"1","
+"
+"1","| 2010|Alabama |AL         |         6046|        968.3|        5106.3|           624|"
+"1","
+"
+"1","| 2011|Alabama |AL         |         5558|        864.0|        5106.3|           624|"
+"1","
+"

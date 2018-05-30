@@ -1,0 +1,50 @@
+"0","#load in data-------------------------------------------------
+unemployment <- read.csv('data/unemployment-by-county-us/output.csv')
+#load in data-------------------------------------------------
+unemployment <- read.csv('data/unemployment-by-county-us/output.csv')
+#filter the data down to january level to match with the way homeless data was structure
+unemploy_2007.2016 <- unemployment %>% filter(Year >= 2007, Month == 'January')
+#the function will take it a state name and filter the dataframe to only that state leve
+#and then loops through each year to find the sum of those year in one dataframe for 
+#for one state (of the county level)
+addSumRateState <- function(name) {
+  df <- unemploy_2007.2016 %>% filter(State == name)
+  res <- c()
+  for(i in years) {
+    year_df <- df %>% filter(Year == i)
+    res <- c(res,sum(year_df$Rate)) 
+  }
+  new_df <- data.frame(Year = years, State = name, 
+                       unemploy.rate_sum = res)
+  return(new_df)
+}
+#return a dataframe from 2007 to 2016 of each state unemployrate by year. 
+unemployRate_sum <- lapply(sort(unique(unemploy_2007.2016$State)), FUN=addSumRateState) %>% bind_rows()
+#return a dataframe from 2007 to 2016 of each state unemployrate by year. 
+unemployRate_sum <- lapply(sort(unique(unemploy_2007.2016$State)), FUN=addSumRateState) %>% bind_rows()
+kable(unemployRate_sum %>% head(5))
+"
+"1","
+
+"
+"1","| Year|State   | unemploy.rate_sum|"
+"1","
+"
+"1","|----:|:-------|-----------------:|"
+"1","
+"
+"1","| 2007|Alabama |             351.1|"
+"1","
+"
+"1","| 2008|Alabama |             398.0|"
+"1","
+"
+"1","| 2009|Alabama |             794.8|"
+"1","
+"
+"1","| 2010|Alabama |             968.3|"
+"1","
+"
+"1","| 2011|Alabama |             864.0|"
+"1","
+"
