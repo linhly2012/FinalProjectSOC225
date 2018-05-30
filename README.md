@@ -40,4 +40,4 @@ visualization technique.
       Plot 2: <img src="img/plot-2.png"/>
       Plot 3: <img src="img/plot-3.png"/>
 
-######[Back to the top](#top)
+[Back to the top](#top)
