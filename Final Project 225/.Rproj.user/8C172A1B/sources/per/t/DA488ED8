@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "888180980",
     "id" : "DA488ED8",
-    "lastKnownWriteTime" : 1527661623,
-    "last_content_update" : 1527661623470,
+    "lastKnownWriteTime" : 1527664608,
+    "last_content_update" : 1527664608743,
     "path" : "~/Desktop/FinalProjectSOC225/Final Project 225/Final-output.Rmd",
     "project_path" : "Final-output.Rmd",
     "properties" : {
-        "cursorPosition" : "24,38",
-        "scrollLine" : "17"
+        "cursorPosition" : "249,27",
+        "scrollLine" : "247"
     },
     "relative_order" : 2,
     "source_on_save" : false,

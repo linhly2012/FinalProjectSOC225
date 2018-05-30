@@ -3,7 +3,7 @@ title: "Relationship between Unemployment and Homelessness"
 author: "Linh Ly"
 output: html_document
 ---
-```{r package_options, include = FALSE}
+```{r package_options, include = FALSE, echo=FALSE}
 #Not including library packages loading when knit the file 
 knitr::opts_knit$set(progress = TRUE, verbose = TRUE)
 library(tidyverse)
@@ -29,7 +29,8 @@ According to [U.S.News](https://www.usnews.com/news/us/articles/2017-12-06/us-ho
 
 - Using the provided sources, a master data sheet will put together to understand the change of unemployment rate and homelessness over time during the course of 2007 to 2016 after the data cleansing process. 
 
-```{r homeless}
+####Total Homelessness Sum
+```{r homeless, echo= FALSE}
 homeless <- read.csv('data/homelessness/2007-2016-Homelessnewss-USA.csv')
 #note: the count value is not the rate. 
 #cleaning text - change the year to actual year in numeric bc it is in 1/1/YYYY format
@@ -50,7 +51,9 @@ totalHomeless_sum <- homeless %>% filter(Measures == 'Total Homeless') %>% arran
 kable(totalHomeless_sum %>% head(5))
 ```
 
-```{r unemployment}
+####Unemployment Rate Sum 
+
+```{r unemployment, echo = FALSE}
 #load in data-------------------------------------------------
 unemployment <- read.csv('data/unemployment-by-county-us/output.csv')
 
@@ -78,7 +81,8 @@ unemployRate_sum <- lapply(sort(unique(unemploy_2007.2016$State)), FUN=addSumRat
 kable(unemployRate_sum %>% head(5))
 ```
 
-```{r}
+#### Homeless and Unemploy Rate Sum 
+```{r, echo = FALSE}
 #the reason a state-code data frame was create to make sure when merge 
 #homeless data and unemploy together, the data will go according to the state
 #since the way the data structure is completely different 
@@ -101,7 +105,9 @@ jointed_homeless_unemploy <- merge(x = jointed_homeless_unemploy, y = unemployRa
 kable(jointed_homeless_unemploy %>% head(5))
 ```
 
-```{r finding average}
+#### Homeless and Unemploy Rate Sum And Average
+
+```{r finding average, echo = FALSE}
 #calculating avg of homeless and unemploy data
 avg <- jointed_homeless_unemploy %>% group_by(state.nam, state.code) %>% 
   mutate(mean.homeless.state = mean(total.homeless_sum),
@@ -113,7 +119,9 @@ kable(avg %>% rename("state code" = "state.code",
                       "unemploy mean" = "mean.unemploy.state") %>% head(5))
 ```
 
-```{r population}
+#### Population Estimate from 2007 to 2016 
+
+```{r population, echo = FALSE}
 #load data 
 state_pop <- read.csv('data/state-pop-10-16/state_est_10-16clean.csv')
 county_pop <- read.csv('data/county-00-10/clean-county-00-10.csv')
@@ -150,7 +158,9 @@ colnames(pop) <- gsub("EST_JUL_", tolower("EST JUL "),colnames(pop))
 kable(pop %>% head(5))
 ```
 
-```{r}
+#### Master Data without Region and Division Code 
+
+```{r master data, echo = FALSE}
 #join AVG, UNEMPLOY, HOMELESS, POPULATION, YEAR, STATE data frame together
 x <- suppressWarnings(suppressMessages(left_join(avg, pop_data, by = "state")))
 #restructure 
@@ -169,7 +179,9 @@ colnames(master) <- gsub("[[:punct:]]+", " ",colnames(master))
 kable(master %>% head(5))
 ```
 
-```{r}
+#### Master Data with Region and Division Code 
+
+```{r full master data, echo = FALSE}
 region <- read.csv('census-regions-master/us census bureau regions and divisions.csv')
 #View(region)
 
@@ -190,7 +202,7 @@ kable(d_join %>% head(5))
 
 ####Summary statistics
 
-```{r}
+```{r sum stat, echo = FALSE}
 #using a dummy variable for displaying purpose
 j <- join
 colnames(j) <- gsub("[[:punct:]]+", " ",colnames(j))
@@ -198,7 +210,7 @@ kable(summary(j %>% ungroup() %>% select(-c(year, division, region, state, c("st
 ```
 
 ####Visualization
-```{r graph 1}
+```{r graph 1, echo = FALSE }
 ggplot(join %>% filter(between(year, 2010, 2016)), 
        aes(x=unemploy.rate_sum, y= total.homeless_sum, colour = region)) +
   geom_point() + 
@@ -214,7 +226,7 @@ ggplot(join %>% filter(between(year, 2010, 2016)),
 
 - Figure 1: The measurement of total homelessness (that do not belong to specific category) in relation to the unemployment rate in 2010 to 2016 in 4 different regions of US. 
 
-```{r graph 2}
+```{r graph 2, echo = FALSE}
 ggplot(join %>% filter(between(year, 2010, 2016), 
                        state.code %in% c("CA", "WA", "TX", "MD", "NY", "MA", "WI", "MO")), 
        aes(unemploy_proportion, homeless_proportion, colour = state)) +
@@ -235,7 +247,7 @@ ggplot(join %>% filter(between(year, 2010, 2016),
 - Looking into figure 2, it displayed that the higher the unemployment proportion, the lower the homeless proportion; the lower the unemployment proportion, the higher the homeless proportion. This figured was plotted by a selection of 8 states with 2 states from each regions. In a way this figure also raised a question, because if this was a positive correlated impact, then it is expected to see high unemployment proportion, high homelessness proportion like the relationship was shown in figure 1 between unemployment and homelessness. One factor that could cause this happen is the population of the states. Which make sense, for states like New York, California, or Washington, their populations has been growing for the last couple years because the larger the number divided to a large  number, the answer is smaller. 
 
 
-```{r graph 3}
+```{r graph 3, echo = FALSE}
 ggplot(join %>% filter(state.code %in% c("CA", "ID", "WA", "UT"))) + 
   geom_line(aes(unemploy.rate_sum, total.homeless_sum, colour = state)) +
   facet_wrap(~state, scale = "free") + 
